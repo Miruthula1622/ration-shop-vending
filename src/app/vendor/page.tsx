@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 
 export default function VendorPage() {
-  const [port, setPort] = useState<SerialPort | null>(null);
-  const [writer, setWriter] = useState<WritableStreamDefaultWriter | null>(null);
+  const [port, setPort] = useState<any>(null);
+  const [writer, setWriter] = useState<any>(null);
   const [statusMsg, setStatusMsg] = useState('Waiting for QR Scan...');
   
   const [user, setUser] = useState<any>(null);
@@ -25,7 +25,7 @@ export default function VendorPage() {
 
   async function connectSerial() {
     try {
-      const p = await navigator.serial.requestPort();
+      const p = await (navigator as any).serial.requestPort();
       await p.open({ baudRate: 115200 });
       setPort(p);
       setWriter(p.writable.getWriter());
