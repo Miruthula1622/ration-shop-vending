@@ -20,9 +20,10 @@ export default function VendorPage() {
       processQR(decodedText);
     }, (error) => {});
 
-      return () => {
-    scanner.clear().catch(e => console.error(e));
-  };
+    return () => {
+      scanner.clear().catch(e => console.error(e));
+    };
+  }, []);
 
   async function connectSerial() {
     try {
