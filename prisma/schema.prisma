@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  username    String
+  mobile      String   @unique
+  password    String
+  dob         String?
+  smartCardId String?
+  qrId        String?  @unique
+  role        String   @default("USER") // ADMIN or USER
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  familyMembers FamilyMember[]
+  allocations   Allocation[]
+  complaints    Complaint[]
+}
+
+model FamilyMember {
+  id     String @id @default(uuid())
+  userId String
+  name   String
+  age    Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model OTPRequest {
+  id        String   @id @default(uuid())
+  mobile    String   @unique
+  otpCode   String
+  createdAt DateTime @default(now())
+}
+
+model Chamber {
+  id             String @id @default(uuid())
+  name           String @unique // Rice, Wheat, Sugar
+  totalCapacity  Float  // in Kg or grams
+  currentLevel   Float  // in Kg or grams
+  lastUpdated    DateTime @default(now())
+}
+
+model Allocation {
+  id           String @id @default(uuid())
+  userId       String
+  monthYear    String // e.g., "10-2023"
+  grainType    String // Rice, Wheat, Sugar
+  allocatedQty Float  // in Kg
+  collectedQty Float  @default(0) // in Kg
+  status       String @default("NOT_COLLECTED") // COLLECTED, PARTIALLY_COLLECTED, NOT_COLLECTED
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Complaint {
+  id         String   @id @default(uuid())
+  userId     String
+  issueType  String
+  status     String   @default("OPEN") // OPEN, RESOLVED
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
